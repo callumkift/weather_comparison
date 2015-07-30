@@ -25,6 +25,7 @@
 #
 
 import urllib2
+import socket
 
 
 def internet_on():
@@ -42,10 +43,26 @@ def internet_on():
     return False
 
 
+def getip():
+    """
+    Method gets device IP address.
+    :return: ip address
+    """
+    return socket.gethostbyname(socket.gethostname())
+
+
 if __name__ == '__main__':
+
+    freegeoip = "http://freegeoip.net/json/"
 
     if internet_on():
         print "Connected"
+
+        ipadd = getip()
+
+
+       
+
     else:
         print "Error: Device not connected to internet"
 
