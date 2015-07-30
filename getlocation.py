@@ -23,8 +23,12 @@ def getip():
     Method gets device IP address.
     :return: ip address
     """
-
-    return urllib2.urlopen('http://ip.42.pl/raw').read()
+    try:
+        ipadd = urllib2.urlopen('http://ip.42.pl/raw').read()
+        return ipadd
+    except urllib2.URLError as e:
+        pass
+    return False
 
 
 def getaddress(ip):
@@ -34,12 +38,15 @@ def getaddress(ip):
     :param ip: ip address
     :return: json of location information
     """
-
-    apiURL = "http://freegeoip.net/json/"
-    url = "{}{}".format(apiURL, ip)
-    u = urllib2.urlopen(url, timeout=1)
-    response = u.read()
-    return response
+    try:
+        apiURL = "http://freegeoip.net/json/"
+        url = "{}{}".format(apiURL, ip)
+        u = urllib2.urlopen(url, timeout=1)
+        response = u.read()
+        return response
+    except urllib2.URLError as e:
+        pass
+    return False
 
 
 def getlatlong(loc_json_str):
