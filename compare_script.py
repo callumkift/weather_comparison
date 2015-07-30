@@ -74,9 +74,10 @@ def getlatlong(loc_json_str):
     """
 
     loc_dict = json.loads(loc_json_str)
+    loc = loc_dict["city"] + ", " + loc_dict["country_code"]
     lat = loc_dict["latitude"]
     long = loc_dict["longitude"]
-    return lat, long
+    return loc, lat, long
 
 
 def getweatherhist(lat, long):
@@ -106,6 +107,7 @@ def getweatherforecast(lat, long):
     response = u.read()
     return response
 
+
 def getweathercurrent(lat, long):
     """
     Gets current weather json
@@ -118,6 +120,7 @@ def getweathercurrent(lat, long):
     response = u.read()
     return response
 
+
 if __name__ == '__main__':
 
     freegeoip = "http://freegeoip.net/json/"
@@ -128,13 +131,11 @@ if __name__ == '__main__':
         pubip = getip()
 
         location_json_str = getaddress(freegeoip, pubip)
-        loc_lat, loc_long = getlatlong(location_json_str)
+        loc_city, loc_lat, loc_long = getlatlong(location_json_str)
 
         history_info = getweatherhist(loc_lat, loc_long)
         current_info = getweathercurrent(loc_lat, loc_long)
         forecast_info = getweatherforecast(loc_lat, loc_long)
-
- 
 
 
     else:
