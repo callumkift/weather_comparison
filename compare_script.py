@@ -25,7 +25,6 @@
 #
 
 import urllib2
-import socket
 import json
 
 
@@ -49,6 +48,7 @@ def getip():
     Method gets device IP address.
     :return: ip address
     """
+
     return urllib2.urlopen('http://ip.42.pl/raw').read()
 
 
@@ -59,10 +59,23 @@ def getaddress(apiURL, ip):
     :param ip: ip address
     :return: json of location information
     """
+
     url = "{}{}".format(apiURL, ip)
-    u = urllib2.urlopen(url, timeout=5)
+    u = urllib2.urlopen(url, timeout=1)
     response = u.read()
-    return json.dumps(response)
+    return response
+
+def getlatlong(loc_json_str):
+    """
+    Extracts latitude and longitude
+    :param loc_json_str: Location JSON string
+    :return:
+    """
+
+    loc_dict = json.loads(loc_json_str)
+    lat = loc_dict["latitude"]
+    long = loc_dict["longitude"]
+    return lat, long
 
 
 if __name__ == '__main__':
@@ -72,11 +85,12 @@ if __name__ == '__main__':
     if internet_on():
         print "Connected"
 
-        ipadd = getip()
+        pubip = getip()
 
-        print getaddress(freegeoip, ipadd)
+        location_json_str = getaddress(freegeoip, pubip)
+        loc_lat, loc_long =  getlatlong(location_json_str)
 
-
+        print loc_lat, loc_long
 
 
     else:
