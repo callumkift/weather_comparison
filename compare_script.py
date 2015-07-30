@@ -86,15 +86,29 @@ def getweatherhist(lat, long):
     :param long: Longitude
     :return: Weather history json
     """
-    
+
     apiURL = "http://api.openweathermap.org/data/2.5/history/city?lat=%f&lon=%f" % (lat, long)
     u = urllib2.urlopen(apiURL)
     response = u.read()
     return response
 
 
+def getweatherforecast(lat, long, apiKEY):
+    """
+    Gets weather forecast json
+    :param lat:
+    :param long:
+    :return: Weather forecast json
+    """
+
+    apiURL = "http://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f1&APPID=%s" % (lat, long, apiKEY)
+    u = urllib2.urlopen(apiURL, timeout=1)
+    response = u.read()
+    return response
+
 if __name__ == '__main__':
 
+    openweather_apikey = "1ad9f142f5a9aeece5914b9fb9cc3446"
     freegeoip = "http://freegeoip.net/json/"
 
     if internet_on():
@@ -106,6 +120,8 @@ if __name__ == '__main__':
         loc_lat, loc_long = getlatlong(location_json_str)
 
         history_info = getweatherhist(loc_lat, loc_long)
+        forecast_info = getweatherforecast(loc_lat, loc_long, openweather_apikey)
+
 
 
     else:
