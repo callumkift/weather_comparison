@@ -34,12 +34,39 @@ if __name__ == '__main__':
 
         pubip = gl.getip()
 
-        location_json_str = gl.getaddress(pubip)
-        loc_city, loc_lat, loc_long = gl.getlatlong(location_json_str)
+        if pubip:
+            location_json_str = gl.getaddress(pubip)
+            if location_json_str:
+                loc_city, loc_lat, loc_long = gl.getlatlong(location_json_str)
 
-        history_info = wc.getweatherhist(loc_lat, loc_long)
-        current_info = wc.getweathercurrent(loc_lat, loc_long)
-        forecast_info = wc.getweatherforecast(loc_lat, loc_long)
+                history_info = wc.getweatherhist(loc_lat, loc_long)
+
+                if history_info:
+                    current_info = wc.getweathercurrent(loc_lat, loc_long)
+
+                    if current_info:
+                        forecast_info = wc.getweatherforecast(loc_lat, loc_long)
+
+                        if forecast_info:
+                            print "All calls made."
+                        else:
+                            print "Error: Could not retrieve weather forecast data!"
+
+                    else:
+                        print "Error: Could not retrieve current weather data!"
+
+                else:
+                    print "Error: Could not retrieve weather history data!"
+
+
+            else:
+                print "Error: Could not retrieve location information!"
+        else:
+            print "Error: Could not retrieve IP address!"
+
+
+
+
 
     else:
         print "Error: Device not connected to internet!"
