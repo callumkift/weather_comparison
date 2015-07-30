@@ -11,10 +11,14 @@ def getweatherhist(lat, long):
     :return: Weather history json
     """
 
-    apiURL = "http://api.openweathermap.org/data/2.5/history/city?lat=%f&lon=%f" % (lat, long)
-    u = urllib2.urlopen(apiURL)
-    response = u.read()
-    return response
+    try:
+        apiURL = "http://api.openweathermap.org/data/2.5/history/city?lat=%f&lon=%f" % (lat, long)
+        u = urllib2.urlopen(apiURL, timeout=2)
+        response = u.read()
+        return response
+    except urllib2.URLError as e:
+        pass
+    return False
 
 
 def getweatherforecast(lat, long):
@@ -25,11 +29,14 @@ def getweatherforecast(lat, long):
     :return: Weather forecast json
     """
 
-    apiURL = "http://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f" % (lat, long)
-    u = urllib2.urlopen(apiURL, timeout=1)
-    response = u.read()
-    return response
-
+    try:
+        apiURL = "http://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f" % (lat, long)
+        u = urllib2.urlopen(apiURL, timeout=2)
+        response = u.read()
+        return response
+    except urllib2.URLError as e:
+        pass
+    return False
 
 def getweathercurrent(lat, long):
     """
@@ -38,7 +45,12 @@ def getweathercurrent(lat, long):
     :param long: longitude
     :return: Current weather json
     """
-    apiURL = "http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f" % (lat, long)
-    u = urllib2.urlopen(apiURL, timeout=1)
-    response = u.read()
-    return response
+
+    try:
+        apiURL = "http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f" % (lat, long)
+        u = urllib2.urlopen(apiURL, timeout=2)
+        response = u.read()
+        return response
+    except urllib2.URLError as e:
+        pass
+    return False
