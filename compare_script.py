@@ -49,11 +49,16 @@ def getip():
     Method gets device IP address.
     :return: ip address
     """
-    return socket.gethostbyname(socket.gethostname())
+    return urllib2.urlopen('http://ip.42.pl/raw').read()
 
 
 def getaddress(apiURL, ip):
-
+    """
+    Gets location information from IP address
+    :param apiURL: URL of api that gives location information
+    :param ip: ip address
+    :return: json of location information
+    """
     url = "{}{}".format(apiURL, ip)
     u = urllib2.urlopen(url, timeout=5)
     response = u.read()
