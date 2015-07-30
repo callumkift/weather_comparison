@@ -26,6 +26,7 @@
 
 import urllib2
 import socket
+import json
 
 
 def internet_on():
@@ -51,6 +52,14 @@ def getip():
     return socket.gethostbyname(socket.gethostname())
 
 
+def getaddress(apiURL, ip):
+
+    url = "{}{}".format(apiURL, ip)
+    u = urllib2.urlopen(url, timeout=5)
+    response = u.read()
+    return json.dumps(response)
+
+
 if __name__ == '__main__':
 
     freegeoip = "http://freegeoip.net/json/"
@@ -60,8 +69,10 @@ if __name__ == '__main__':
 
         ipadd = getip()
 
+        print getaddress(freegeoip, ipadd)
 
-       
+
+
 
     else:
         print "Error: Device not connected to internet"
