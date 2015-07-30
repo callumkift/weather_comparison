@@ -65,6 +65,7 @@ def getaddress(apiURL, ip):
     response = u.read()
     return response
 
+
 def getlatlong(loc_json_str):
     """
     Extracts latitude and longitude
@@ -78,6 +79,20 @@ def getlatlong(loc_json_str):
     return lat, long
 
 
+def getweatherhist(lat, long):
+    """
+    Gets weather history json
+    :param lat: Latitude
+    :param long: Longitude
+    :return: Weather history json
+    """
+    
+    apiURL = "http://api.openweathermap.org/data/2.5/history/city?lat=%f&lon=%f" % (lat, long)
+    u = urllib2.urlopen(apiURL)
+    response = u.read()
+    return response
+
+
 if __name__ == '__main__':
 
     freegeoip = "http://freegeoip.net/json/"
@@ -88,11 +103,10 @@ if __name__ == '__main__':
         pubip = getip()
 
         location_json_str = getaddress(freegeoip, pubip)
-        loc_lat, loc_long =  getlatlong(location_json_str)
+        loc_lat, loc_long = getlatlong(location_json_str)
 
-        print loc_lat, loc_long
+        history_info = getweatherhist(loc_lat, loc_long)
 
 
     else:
         print "Error: Device not connected to internet"
-
