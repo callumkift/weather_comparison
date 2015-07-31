@@ -1,7 +1,11 @@
 #!/usr/bin/env python
+"""
+Methods that get location data of the device.
+"""
 
 import urllib2
 import json
+
 
 def internet_on():
     """

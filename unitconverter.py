@@ -24,4 +24,4 @@ def temperatureconverter(temp_kelvin):
     """
 
     zerokelvin = 273.15
-    return temp_kelvin - zerokelvin
+    return int(temp_kelvin - zerokelvin)

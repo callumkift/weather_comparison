@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-
+"""
+Methods that obtain weather data from online.
+"""
 import urllib2
 
 
@@ -37,6 +39,7 @@ def getweatherforecast(lat, long):
     except urllib2.URLError as e:
         pass
     return False
+
 
 def getweathercurrent(lat, long):
     """
