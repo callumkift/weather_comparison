@@ -12,15 +12,15 @@ def getweatherhist(lat, long):
     :param long: Longitude
     :return: Weather history json
     """
-
-    try:
-        apiURL = "http://api.openweathermap.org/data/2.5/history/city?lat=%f&lon=%f" % (lat, long)
-        u = urllib2.urlopen(apiURL, timeout=2)
-        response = u.read()
-        return response
-    except urllib2.URLError as e:
-        pass
-    return False
+    while True:
+        try:
+            apiURL = "http://api.openweathermap.org/data/2.5/history/city?lat=%f&lon=%f" % (lat, long)
+            u = urllib2.urlopen(apiURL, timeout=2)
+            response = u.read()
+            break
+        except urllib2.URLError as e:
+            pass
+    return response
 
 
 def getweatherforecast(lat, long):
@@ -30,15 +30,15 @@ def getweatherforecast(lat, long):
     :param long: Longitude
     :return: Weather forecast json
     """
-
-    try:
-        apiURL = "http://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f" % (lat, long)
-        u = urllib2.urlopen(apiURL, timeout=2)
-        response = u.read()
-        return response
-    except urllib2.URLError as e:
-        pass
-    return False
+    while True:
+        try:
+            apiURL = "http://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f" % (lat, long)
+            u = urllib2.urlopen(apiURL, timeout=2)
+            response = u.read()
+            break
+        except urllib2.URLError as e:
+            pass
+    return response
 
 
 def getweathercurrent(lat, long):
@@ -48,12 +48,12 @@ def getweathercurrent(lat, long):
     :param long: longitude
     :return: Current weather json
     """
-
-    try:
-        apiURL = "http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f" % (lat, long)
-        u = urllib2.urlopen(apiURL, timeout=2)
-        response = u.read()
-        return response
-    except urllib2.URLError as e:
-        pass
-    return False
+    while True:
+        try:
+            apiURL = "http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f" % (lat, long)
+            u = urllib2.urlopen(apiURL, timeout=2)
+            response = u.read()
+            break
+        except urllib2.URLError as e:
+            pass
+    return response

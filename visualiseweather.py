@@ -94,7 +94,7 @@ def getforecastinfo(forecast_info):
     return foreinfo
 
 
-def plotweathercompare(history_list, forecast_list):
+def plotstatic(history_list, forecast_list):
     """
     Plots today's forecast and yesterday's history
     :param history_list: list of weather history data
@@ -138,7 +138,7 @@ def plotweathercompare(history_list, forecast_list):
     ax1.plot(fdates, foretemp, "go-", label="Today")
     ax1.set_xlabel(r"Time")
     ax1.set_ylabel(r"Temperature $(^{o}C)$")
-    ax1.set_xlim(fmintime, fmaxtime)
+    # ax1.set_xlim(fmintime, fmaxtime)
     ax1.set_ylim(tempaxismin - 1, tempaxismax + 1)
     ax1.xaxis.set_major_formatter(mdates.HourLocator())
     ax1.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
@@ -146,6 +146,7 @@ def plotweathercompare(history_list, forecast_list):
 
     ax2 = ax1.twinx()
     ax2.vlines(fdates, 0.0, forerain, 'b')
+    # ax2.set_xlim(fmintime, fmaxtime)
     ax2.set_ylim(0.0, np.max(forerain) + 0.05)
     ax2.set_ylabel(r"Rainfull $(mm)$", color="b")
     for tl in ax2.get_yticklabels():

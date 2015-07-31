@@ -29,54 +29,22 @@ import weathercalls as wc
 import visualiseweather as vw
 
 if __name__ == '__main__':
+    gl.internet_on()
 
-    if gl.internet_on():
-        print "Connected."
+    pubip = gl.getip()
+    location_json_str = gl.getaddress(pubip)
+    loc_city, loc_lat, loc_long = gl.getlatlong(location_json_str)
 
-        pubip = gl.getip()
+    print "Location identified"
 
-        if pubip:
-            print "IP address obtained."
-            location_json_str = gl.getaddress(pubip)
+    history_info = wc.getweatherhist(loc_lat, loc_long)
+    current_info = wc.getweathercurrent(loc_lat, loc_long)
+    forecast_info = wc.getweatherforecast(loc_lat, loc_long)
 
-            if location_json_str:
-                print "Location obtained."
-                loc_city, loc_lat, loc_long = gl.getlatlong(location_json_str)
+    print "All weather info retrieved."
 
-                history_info = wc.getweatherhist(loc_lat, loc_long)
+    c_info = vw.getcurrentinfo(current_info)
+    h_info = vw.gethistoryinfo(history_info)
+    f_info = vw.getforecastinfo(forecast_info)
 
-                if history_info:
-                    print "Weather history obtained."
-                    current_info = wc.getweathercurrent(loc_lat, loc_long)
-
-                    if current_info:
-                        print "Current weather obtained."
-                        forecast_info = wc.getweatherforecast(loc_lat, loc_long)
-
-                        if forecast_info:
-                            print "Weather forecast obtained."
-                            print "All calls made.\n"
-
-                            c_info = vw.getcurrentinfo(current_info)
-                            h_info = vw.gethistoryinfo(history_info)
-                            f_info = vw.getforecastinfo(forecast_info)
-
-                            vw.plotweathercompare(h_info, f_info)
-
-                        else:
-                            print "Error: Could not retrieve weather forecast data!"
-
-                    else:
-                        print "Error: Could not retrieve current weather data!"
-
-                else:
-                    print "Error: Could not retrieve weather history data!"
-
-
-            else:
-                print "Error: Could not retrieve location information!"
-        else:
-            print "Error: Could not retrieve IP address!"
-
-    else:
-        print "Error: Device not connected to internet!"
+    vw.plotstatic(h_info, f_info)
