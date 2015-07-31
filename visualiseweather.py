@@ -6,6 +6,9 @@ Methods that visualise the weather data.
 import json
 import unitconverter as uc
 import datetime as dt
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 
 def getcurrentinfo(current_json):
@@ -46,7 +49,7 @@ def gethistoryinfo(history_json):
     for i in range(ndata):
         htime = (historyinfo["list"])[i]["dt"]
         htemp = (historyinfo["list"])[i]["main"]["temp"]
-        histdatetemp.append([htime, htemp])
+        histdatetemp.append([uc.datetimeconverter(htime), uc.temperatureconverter(htemp)])
 
     return histdatetemp
 
@@ -62,36 +65,81 @@ def getforecastinfo(forecast_info):
     forecastinfo = json.loads(forecast_info)
 
     ndata = forecastinfo["cnt"]
-    now = dt.datetime.now()
+    firsttime = uc.datetimeconverter((forecastinfo["list"])[0]["dt"])
     secsinday = 60 * 60 * 24
-
 
     foreinfo = []
 
     for i in range(ndata):
-        forerain = (forecastinfo["list"])[i]["rain"]
+
         forewd = ((forecastinfo["list"])[i]["weather"])[0]["description"]
         foretime = uc.datetimeconverter((forecastinfo["list"])[i]["dt"])
         foretemp = uc.temperatureconverter((forecastinfo["list"])[i]["main"]["temp"])
         forewind = (forecastinfo["list"])[i]["wind"]["speed"]
 
-        if len(forerain) == 0:
+        try:
+            forerain = (forecastinfo["list"])[i]["rain"]
+            if len(forerain) == 0:
+                forerain = 0.0
+            else:
+                forerain = forerain["3h"]
+        except KeyError as e:
             forerain = 0.0
-        else:
-            forerain = forerain["3h"]
 
-        diffindays = (foretime - now).total_seconds() /secsinday
+        diffindays = (foretime - firsttime).total_seconds() / secsinday
 
         if diffindays < 1.0:
             foreinfo.append([foretime, forewd, foretemp, forewind, forerain])
 
-
-    # keys = []
-    #
-    # for key in forecastinfo:
-    #     keys.append(key)
-    #
-    # for i in range(len(keys)):
-    #     print keys[i], "\n", forecastinfo[keys[i]], "\n"
-
     return foreinfo
+
+
+def plotweathercompare(history_list, forecast_list):
+    """
+    Plots today's forecast and yesterday's history
+    :param history_list: list of weather history data
+    :param forecast_list: list of weather forecast data
+    :return:
+    """
+
+    histtime, histtemp = zip(*history_list)
+    foretime, forewd, foretemp, forewind, forerain = zip(*forecast_list)
+
+    fmintime = foretime[0]
+    fmaxtime = foretime[-1]
+    oneday = 24
+    secsinhour = 60 * 60
+
+    hdates = [oneday + ((time - fmintime).total_seconds() / secsinhour) for time in histtime]
+    fdates = [(time - fmintime).total_seconds() / secsinhour for time in foretime]
+
+    hdates = [fmintime + dt.timedelta(hours=hour) for hour in hdates]
+    fdates = [fmintime + dt.timedelta(hours=hour) for hour in fdates]
+
+    htmax = np.amax(histtemp)
+    htmin = np.amin(histtemp)
+    ftmax = np.amax(foretemp)
+    ftmin = np.amin(foretemp)
+
+    if htmax > ftmax:
+        tempaxismax = htmax
+    else:
+        tempaxismax = ftmax
+
+    if htmin < ftmin:
+        tempaxismin = htmin
+    else:
+        tempaxismin = ftmin
+
+    plt.plot(hdates, histtemp, "ro-", label="Yesterday")
+    plt.plot(fdates, foretemp, "bo-", label="Today")
+    plt.xlabel(r"Time")
+    plt.ylabel(r"Temperature $(^{o}C)$")
+    plt.suptitle("Forecast Comparison")
+    plt.xlim(fmintime, fmaxtime)
+    plt.ylim(tempaxismin - 1, tempaxismax + 1)
+    plt.gca().xaxis.set_major_formatter(mdates.HourLocator())
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    plt.legend(loc=1)
+    plt.show()
+    return
