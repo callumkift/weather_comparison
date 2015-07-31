@@ -26,29 +26,40 @@
 
 import getlocation as gl
 import weathercalls as wc
+import visualiseweather as vw
 
 if __name__ == '__main__':
 
     if gl.internet_on():
-        print "Connected"
+        print "Connected."
 
         pubip = gl.getip()
 
         if pubip:
+            print "IP address obtained."
             location_json_str = gl.getaddress(pubip)
+
             if location_json_str:
+                print "Location obtained."
                 loc_city, loc_lat, loc_long = gl.getlatlong(location_json_str)
 
                 history_info = wc.getweatherhist(loc_lat, loc_long)
 
                 if history_info:
+                    print "Weather history obtained."
                     current_info = wc.getweathercurrent(loc_lat, loc_long)
 
                     if current_info:
+                        print "Current weather obtained."
                         forecast_info = wc.getweatherforecast(loc_lat, loc_long)
 
                         if forecast_info:
-                            print "All calls made."
+                            print "Weather forecast obtained."
+                            print "All calls made.\n"
+
+                            c_info = vw.getcurrentinfo(current_info)
+                            h_info = vw.gethistoryinfo(history_info)
+                            f_info = vw.getforecastinfo(forecast_info)
                         else:
                             print "Error: Could not retrieve weather forecast data!"
 
@@ -63,10 +74,6 @@ if __name__ == '__main__':
                 print "Error: Could not retrieve location information!"
         else:
             print "Error: Could not retrieve IP address!"
-
-
-
-
 
     else:
         print "Error: Device not connected to internet!"
