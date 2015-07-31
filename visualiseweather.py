@@ -131,15 +131,25 @@ def plotweathercompare(history_list, forecast_list):
     else:
         tempaxismin = ftmin
 
-    plt.plot(hdates, histtemp, "ro-", label="Yesterday")
-    plt.plot(fdates, foretemp, "bo-", label="Today")
-    plt.xlabel(r"Time")
-    plt.ylabel(r"Temperature $(^{o}C)$")
+    fig, ax1 = plt.subplots()
     plt.suptitle("Forecast Comparison")
-    plt.xlim(fmintime, fmaxtime)
-    plt.ylim(tempaxismin - 1, tempaxismax + 1)
-    plt.gca().xaxis.set_major_formatter(mdates.HourLocator())
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    plt.legend(loc=1)
+
+    ax1.plot(hdates, histtemp, "ro-", label="Yesterday")
+    ax1.plot(fdates, foretemp, "go-", label="Today")
+    ax1.set_xlabel(r"Time")
+    ax1.set_ylabel(r"Temperature $(^{o}C)$")
+    ax1.set_xlim(fmintime, fmaxtime)
+    ax1.set_ylim(tempaxismin - 1, tempaxismax + 1)
+    ax1.xaxis.set_major_formatter(mdates.HourLocator())
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    ax1.legend(loc=1)
+
+    ax2 = ax1.twinx()
+    ax2.vlines(fdates, 0.0, forerain, 'b')
+    ax2.set_ylim(0.0, np.max(forerain) + 0.05)
+    ax2.set_ylabel(r"Rainfull $(mm)$", color="b")
+    for tl in ax2.get_yticklabels():
+        tl.set_color('b')
+
     plt.show()
     return
