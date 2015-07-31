@@ -7,7 +7,7 @@ import json
 import unitconverter as uc
 
 
-def printcurrent(current_json):
+def getcurrentinfo(current_json):
     """
     Extracts data from current weather json
     :param current_json: JSON of current weather
@@ -16,22 +16,33 @@ def printcurrent(current_json):
 
     weatherinfo = json.loads(current_json)
 
-    time = uc.datetimeconverter(weatherinfo["dt"]).strftime('%H:%M')
+    time = uc.datetimeconverter(weatherinfo["dt"])  # .strftime("%H:%M")
     wd = (weatherinfo["weather"][0])["description"]
     temp = uc.temperatureconverter(weatherinfo["main"]["temp"])  # degrees
     pressure = weatherinfo["main"]["pressure"]  # hPa
     humidity = weatherinfo["main"]["humidity"]  # %
-    windspeed = weatherinfo["wind"]["speed"]  # m / s
-    sunrise = uc.datetimeconverter(weatherinfo["sys"]["sunrise"]).strftime('%H:%M:%S')
-    sunset = uc.datetimeconverter(weatherinfo["sys"]["sunset"]).strftime('%H:%M:%S')
+    windspeed = int(weatherinfo["wind"]["speed"])  # m / s
+    sunrise = uc.datetimeconverter(weatherinfo["sys"]["sunrise"])  # .strftime("%H:%M")
+    sunset = uc.datetimeconverter(weatherinfo["sys"]["sunset"])  # .strftime("%H:%M")
 
-    print "time: ", time
-    print "weather description: %s" % wd
-    print "temperature: %f" % temp
-    print "pressure: ", pressure
-    print "humidity: ", humidity
-    print "wind speed: %f" % windspeed
-    print "sunrise: ", sunrise
-    print "sunset: ", sunset
+    return [time, wd, temp, windspeed, sunrise, sunset, pressure, humidity]
 
-    return
+
+def gethistoryinfo(history_json):
+    """
+    Extracts datetime and temperature from history json
+    :param history_json: history json data
+    :return: list of datetimes and temperatures
+    """
+
+    historyinfo = json.loads(history_json)
+
+    ndata = historyinfo["cnt"]
+    histdatetemp = []
+
+    for i in range(ndata):
+        htime = (historyinfo["list"])[i]["dt"]
+        htemp = (historyinfo["list"])[i]["main"]["temp"]
+        histdatetemp.append([htime, htemp])
+
+    return histdatetemp
