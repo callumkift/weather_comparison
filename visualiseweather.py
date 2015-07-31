@@ -5,13 +5,15 @@ Methods that visualise the weather data.
 
 import json
 import unitconverter as uc
+import datetime as dt
 
 
 def getcurrentinfo(current_json):
     """
     Extracts data from current weather json
     :param current_json: JSON of current weather
-    :return:
+    :return: list of current weather info
+                [time, weather_description, temperature, wind_speed, sunrise, sunset, pressure, humidity]
     """
 
     weatherinfo = json.loads(current_json)
@@ -31,8 +33,9 @@ def getcurrentinfo(current_json):
 def gethistoryinfo(history_json):
     """
     Extracts datetime and temperature from history json
-    :param history_json: history json data
+    :param history_json: history json
     :return: list of datetimes and temperatures
+                [time, temperature]
     """
 
     historyinfo = json.loads(history_json)
@@ -46,3 +49,49 @@ def gethistoryinfo(history_json):
         histdatetemp.append([htime, htemp])
 
     return histdatetemp
+
+
+def getforecastinfo(forecast_info):
+    """
+    Extracts next 24hrs of forecast json
+    :param forecast_info:  forecast json
+    :return: list of forecast data
+                [time, weather_description, temperature, wind_speed, rain_fall]
+    """
+
+    forecastinfo = json.loads(forecast_info)
+
+    ndata = forecastinfo["cnt"]
+    now = dt.datetime.now()
+    secsinday = 60 * 60 * 24
+
+
+    foreinfo = []
+
+    for i in range(ndata):
+        forerain = (forecastinfo["list"])[i]["rain"]
+        forewd = ((forecastinfo["list"])[i]["weather"])[0]["description"]
+        foretime = uc.datetimeconverter((forecastinfo["list"])[i]["dt"])
+        foretemp = uc.temperatureconverter((forecastinfo["list"])[i]["main"]["temp"])
+        forewind = (forecastinfo["list"])[i]["wind"]["speed"]
+
+        if len(forerain) == 0:
+            forerain = 0.0
+        else:
+            forerain = forerain["3h"]
+
+        diffindays = (foretime - now).total_seconds() /secsinday
+
+        if diffindays < 1.0:
+            foreinfo.append([foretime, forewd, foretemp, forewind, forerain])
+
+
+    # keys = []
+    #
+    # for key in forecastinfo:
+    #     keys.append(key)
+    #
+    # for i in range(len(keys)):
+    #     print keys[i], "\n", forecastinfo[keys[i]], "\n"
+
+    return foreinfo
