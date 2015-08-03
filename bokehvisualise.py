@@ -14,7 +14,8 @@ def interactiveplot(history_json, current_json, forecast_json):
 
     histdata = extracthistory(history_json)
     currdata = extractcurrent(current_json)
-    drawgraph(histdata, currdata)
+    foredata = extractforecast(forecast_json)
+    drawgraph(histdata, currdata, foredata)
 
     return
 
@@ -62,8 +63,47 @@ def extractcurrent(current_json):
     return [time, wd, temp, windspeed, sunrise, sunset, pressure, humidity]
 
 
+def extractforecast(forecast_json):
+    """
+    Extracts next 24hrs of forecast json
+    :param forecast_json:  forecast json
+    :return: list of forecast data
+                [time, weather_description, temperature, wind_speed, rain_fall]
+    """
 
-def drawgraph(hist_list, curr_list):
+    forecastinfo = json.loads(forecast_json)
+
+    ndata = forecastinfo["cnt"]
+    firsttime = uc.datetimeconverter((forecastinfo["list"])[0]["dt"])
+    secsinday = 60 * 60 * 24
+
+    foreinfo = []
+
+    for i in range(ndata):
+
+        forewd = ((forecastinfo["list"])[i]["weather"])[0]["description"]
+        foretime = uc.datetimeconverter((forecastinfo["list"])[i]["dt"])
+        foretemp = uc.temperatureconverter((forecastinfo["list"])[i]["main"]["temp"])
+        forewind = (forecastinfo["list"])[i]["wind"]["speed"]
+
+        try:
+            forerain = (forecastinfo["list"])[i]["rain"]
+            if len(forerain) == 0:
+                forerain = 0.0
+            else:
+                forerain = forerain["3h"]
+        except KeyError as e:
+            forerain = 0.0
+
+        diffindays = (foretime - firsttime).total_seconds() / secsinday
+
+        if diffindays < 1.0:
+            foreinfo.append([foretime, forewd, foretemp, forewind, forerain])
+
+    return foreinfo
+
+
+def drawgraph(hist_list, curr_list, fore_list):
 
     t, temp = zip(*hist_list)
 
