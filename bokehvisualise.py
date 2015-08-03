@@ -111,32 +111,48 @@ def extractforecast(forecast_json):
 
 
 def drawgraph(hist_list, curr_list, fore_list):
-    htime, htemp = zip(*hist_list)
+    """
+    Organises data to plot
+    :param hist_list: list of history data
+    :param curr_list: list of current data
+    :param fore_list: list of forecast data
+    :return:
+    """
 
-    ctime = curr_list[0]; cwd = curr_list[1]; ctemp = curr_list[2]; cwspeed = curr_list[3]
-    csrise = curr_list[4]; csset = curr_list[5]; cpress = curr_list[6]; chum = curr_list[7]
-    ftime, fwd, ftemp, fwspeed, frain = zip(*fore_list)
-
-    htime, ftime = overlaptimes(htime, ftime)
-
-    # output to static HTML file
     output_file("wc.html", title="Weather Comparison")
+    plot_hf = histfore(hist_list, fore_list)
 
-    # create a new plot with a title and axis labels
-    p = figure(title="Weather Comparison", x_axis_label="Time", y_axis_label="Temperature")
-
-    # add a line renderer with legend and line thickness
-    p.line(htime, htemp, color="blue", line_width=2, alpha=0.3)
-    p.line(ftime, ftemp, color="red", line_width=2)
-
-    # show the results
-    show(p)
+    show(plot_hf)
     return
 
 
+def histfore(histlist, forelist):
+    """
+    Organises plot that compares weather history and forecast
+    :param histlist: list of history data
+    :param forelist: list of forecast data
+    :return: plot information
+    """
+    htime, htemp = zip(*histlist)
+    ftime, fwd, ftemp, fwspeed, frain = zip(*forelist)
+
+    htime, ftime = overlaptimes(htime, ftime)
+    p = figure(title="Weather Comparison", x_axis_label="Time", y_axis_label=r"Temperature", x_axis_type="datetime")
+
+    p.line(htime, htemp, legend="Yesterday", color="blue", line_width=1, alpha=0.3)
+    p.line(ftime, ftemp, legend="Today", color="red", line_width=1)
+    p.circle(ftime, ftemp, legend="Today", color="red")
+    p.legend.orientation = "bottom_left"
+    return p
+
+
 def overlaptimes(htime, ftime):
-
-
+    """
+    Overlaps history and forecast times, so that they are easier to compare
+    :param htime: list of history data times
+    :param ftime: list of forecast data times
+    :return: history and forecast time lists are overlapped
+    """
     oneday = 24
     secsinhour = 60 * 60
     fmintime = ftime[0]
