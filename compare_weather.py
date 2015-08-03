@@ -26,7 +26,8 @@
 
 import getlocation as gl
 import weathercalls as wc
-import visualiseweather as vw
+# import visualiseweather as vw
+import bokehvisualise as bv
 
 if __name__ == '__main__':
     gl.internet_on()
@@ -43,8 +44,10 @@ if __name__ == '__main__':
 
     print "All weather info retrieved."
 
-    c_info = vw.getcurrentinfo(current_info)
-    h_info = vw.gethistoryinfo(history_info)
-    f_info = vw.getforecastinfo(forecast_info)
+    # c_info = vw.getcurrentinfo(current_info)
+    # h_info = vw.gethistoryinfo(history_info)
+    # f_info = vw.getforecastinfo(forecast_info)
+    #
+    # vw.plotstatic(h_info, f_info)
 
-    vw.plotstatic(h_info, f_info)
+    bv.interactiveplot(history_info, current_info, forecast_info)
