@@ -135,14 +135,30 @@ def histfore(histlist, forelist):
     """
     htime, htemp = zip(*histlist)
     ftime, fwd, ftemp, fwspeed, frain = zip(*forelist)
-
     htime, ftime = overlaptimes(htime, ftime)
-    p = figure(title="Weather Comparison", x_axis_label="Time", y_axis_label=r"Temperature", x_axis_type="datetime")
+
+    fsource = ColumnDataSource(
+        data=dict(
+            ftime=ftime,
+            ftemp=ftemp,
+            fwdes=fwd,
+            fwspe=fwspeed,
+            frain=frain
+        )
+    )
+
+    TOOLS = "pan,wheel_zoom,box_zoom,reset,hover"
+    p = figure(title="Weather Comparison", x_axis_label="Time", y_axis_label=r"Temperature", x_axis_type="datetime",
+               tools=TOOLS)
 
     p.line(htime, htemp, legend="Yesterday", color="blue", line_width=1, alpha=0.3)
-    p.line(ftime, ftemp, legend="Today", color="red", line_width=1)
-    p.circle(ftime, ftemp, legend="Today", color="red")
+    p.line(ftime, ftemp, source=fsource, legend="Today", color="red", line_width=1)
+    p.circle(ftime, ftemp, source=fsource, legend="Today", color="red")
     p.legend.orientation = "bottom_left"
+
+    hover = p.select(dict(type=HoverTool))
+    hover.tooltips = OrderedDict([("Description", "@fwdes"), ("Windspeed", "@fwspe"), ("Rain (mm)", "@frain")])
+
     return p
 
 
