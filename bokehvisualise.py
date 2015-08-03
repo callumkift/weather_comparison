@@ -13,7 +13,8 @@ from bokeh.models import HoverTool, ColumnDataSource
 def interactiveplot(history_json, current_json, forecast_json):
 
     histdata = extracthistory(history_json)
-    drawgraph(histdata)
+    currdata = extractcurrent(current_json)
+    drawgraph(histdata, currdata)
 
     return
 
@@ -39,7 +40,30 @@ def extracthistory(history_json):
     return histdatetemp
 
 
-def drawgraph(hist_list):
+def extractcurrent(current_json):
+    """
+    Extracts data from current weather json
+    :param current_json: JSON of current weather
+    :return: list of current weather info
+                [time, weather_description, temperature, wind_speed, sunrise, sunset, pressure, humidity]
+    """
+
+    weatherinfo = json.loads(current_json)
+
+    time = uc.datetimeconverter(weatherinfo["dt"])  # .strftime("%H:%M")
+    wd = (weatherinfo["weather"][0])["description"]
+    temp = uc.temperatureconverter(weatherinfo["main"]["temp"])  # degrees
+    pressure = weatherinfo["main"]["pressure"]  # hPa
+    humidity = weatherinfo["main"]["humidity"]  # %
+    windspeed = int(weatherinfo["wind"]["speed"])  # m / s
+    sunrise = uc.datetimeconverter(weatherinfo["sys"]["sunrise"])  # .strftime("%H:%M")
+    sunset = uc.datetimeconverter(weatherinfo["sys"]["sunset"])  # .strftime("%H:%M")
+
+    return [time, wd, temp, windspeed, sunrise, sunset, pressure, humidity]
+
+
+
+def drawgraph(hist_list, curr_list):
 
     t, temp = zip(*hist_list)
 
