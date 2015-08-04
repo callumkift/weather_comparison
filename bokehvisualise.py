@@ -48,8 +48,12 @@ def extracthistory(history_json):
         hwdes = (historyinfo["list"])[i]["weather"][0]["description"]
         htemp = uc.temperatureconverter((historyinfo["list"])[i]["main"]["temp"])
         hwspe = (historyinfo["list"])[i]["wind"]["speed"]
+        hwdir = (historyinfo["list"])[i]["wind"]["deg"]
         hrain = "n/a"
-        histdatetemp.append([htime, hwdes, htemp, hwspe, hrain])
+
+        hwdir = uc.winddirection(hwdir)
+
+        histdatetemp.append([htime, hwdes.lower(), htemp, hwspe, hwdir, hrain])
 
     return histdatetemp
 
@@ -98,6 +102,9 @@ def extractforecast(forecast_json):
         foretime = uc.datetimeconverter((forecastinfo["list"])[i]["dt"])
         foretemp = uc.temperatureconverter((forecastinfo["list"])[i]["main"]["temp"])
         forewind = (forecastinfo["list"])[i]["wind"]["speed"]
+        forewdir = (forecastinfo["list"])[i]["wind"]["deg"]
+
+        forewdir = uc.winddirection(forewdir)
 
         try:
             forerain = (forecastinfo["list"])[i]["rain"]
@@ -111,7 +118,7 @@ def extractforecast(forecast_json):
         diffindays = (foretime - firsttime).total_seconds() / secsinday
 
         if diffindays < 1.0:
-            foreinfo.append([foretime, forewd, foretemp, forewind, forerain])
+            foreinfo.append([foretime, forewd.lower(), foretemp, forewind, forewdir, forerain])
 
     return foreinfo
 
@@ -139,8 +146,8 @@ def histfore(histlist, forelist):
     :param forelist: list of forecast data
     :return: plot information
     """
-    htime, hwd, htemp, hwspeed, hrain = zip(*histlist)
-    ftime, fwd, ftemp, fwspeed, frain = zip(*forelist)
+    htime, hwd, htemp, hwspeed, hwdir, hrain = zip(*histlist)
+    ftime, fwd, ftemp, fwspeed, fwdir, frain = zip(*forelist)
     htime, ftime = overlaptimes(htime, ftime)
 
     hsource = ColumnDataSource(
@@ -149,6 +156,7 @@ def histfore(histlist, forelist):
             temp=htemp,
             wdes=hwd,
             wspe=hwspeed,
+            wdir=hwdir,
             rain=hrain
         )
     )
@@ -159,6 +167,7 @@ def histfore(histlist, forelist):
             temp=ftemp,
             wdes=fwd,
             wspe=fwspeed,
+            wdir=fwdir,
             rain=frain
         )
     )
@@ -167,14 +176,17 @@ def histfore(histlist, forelist):
     p = figure(title="Weather Comparison", x_axis_label="Time", y_axis_label=r"Temperature", x_axis_type="datetime",
                tools=TOOLS)
 
-    p.line(htime, htemp, source=hsource, legend="Yesterday", color="blue", line_width=1, alpha=0.3)
-    p.line(ftime, ftemp, source=fsource, legend="Today", color="red", line_width=1)
+    linewidth = 1  # linewidth of plot
+    alpha = 0.3  # fade of history data
+
+    p.line(htime, htemp, source=hsource, legend="Yesterday", color="blue", line_width=linewidth, alpha=alpha)
+    p.line(ftime, ftemp, source=fsource, legend="Today", color="red", line_width=linewidth)
     p.circle(ftime, ftemp, source=fsource, legend="Today", color="red")
     p.legend.orientation = "bottom_left"
 
     hover = p.select(dict(type=HoverTool))
     hover.tooltips = OrderedDict(
-        [("Temperature", "@temp"), ("Description", "@wdes"), ("Windspeed (m/s)", "@wspe"),
+        [("Temperature", "@temp"), ("Description", "@wdes"), ("Wind speed (m/s)", "@wspe"), ("Wind direction", "@wdir"),
          ("Rain (mm)", "@rain")])
 
     return p
