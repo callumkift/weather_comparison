@@ -32,7 +32,7 @@ def extracthistory(history_json):
     Extracts datetime and temperature from history json
     :param history_json: history json
     :return: list of datetimes and temperatures
-                [time, temperature]
+                [time, weather_description, temperature, wind_speed, wind_direction, rain_fall]
     """
 
     historyinfo = json.loads(history_json)
@@ -47,7 +47,7 @@ def extracthistory(history_json):
         htime = uc.datetimeconverter((historyinfo["list"])[i]["dt"])
         hwdes = (historyinfo["list"])[i]["weather"][0]["description"]
         htemp = uc.temperatureconverter((historyinfo["list"])[i]["main"]["temp"])
-        hwspe = (historyinfo["list"])[i]["wind"]["speed"]
+        hwspe = int((historyinfo["list"])[i]["wind"]["speed"])
         hwdir = (historyinfo["list"])[i]["wind"]["deg"]
         hrain = "n/a"
 
@@ -74,10 +74,11 @@ def extractcurrent(current_json):
     pressure = weatherinfo["main"]["pressure"]  # hPa
     humidity = weatherinfo["main"]["humidity"]  # %
     windspeed = int(weatherinfo["wind"]["speed"])  # m / s
+    winddir = uc.winddirection(weatherinfo["wind"]["deg"])
     sunrise = uc.datetimeconverter(weatherinfo["sys"]["sunrise"])  # .strftime("%H:%M")
     sunset = uc.datetimeconverter(weatherinfo["sys"]["sunset"])  # .strftime("%H:%M")
 
-    return [time, wd, temp, windspeed, sunrise, sunset, pressure, humidity]
+    return [time, wd, temp, windspeed, winddir, sunrise, sunset, pressure, humidity]
 
 
 def extractforecast(forecast_json):
@@ -85,7 +86,7 @@ def extractforecast(forecast_json):
     Extracts next 24hrs of forecast json
     :param forecast_json:  forecast json
     :return: list of forecast data
-                [time, weather_description, temperature, wind_speed, rain_fall]
+                [time, weather_description, temperature, wind_speed, wind_direction, rain_fall]
     """
 
     forecastinfo = json.loads(forecast_json)
@@ -101,7 +102,7 @@ def extractforecast(forecast_json):
         forewd = ((forecastinfo["list"])[i]["weather"])[0]["description"]
         foretime = uc.datetimeconverter((forecastinfo["list"])[i]["dt"])
         foretemp = uc.temperatureconverter((forecastinfo["list"])[i]["main"]["temp"])
-        forewind = (forecastinfo["list"])[i]["wind"]["speed"]
+        forewind = int((forecastinfo["list"])[i]["wind"]["speed"])
         forewdir = (forecastinfo["list"])[i]["wind"]["deg"]
 
         forewdir = uc.winddirection(forewdir)
