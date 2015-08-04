@@ -22,7 +22,7 @@ def interactiveplot(history_json, current_json, forecast_json):
     histdata = extracthistory(history_json)
     currdata = extractcurrent(current_json)
     foredata = extractforecast(forecast_json)
-    drawgraph(histdata, currdata, foredata)
+    visdata(histdata, currdata, foredata)
 
     return
 
@@ -45,15 +45,13 @@ def extracthistory(history_json):
         #     print (historyinfo["list"])[i]
         #     print "\n"
         htime = uc.datetimeconverter((historyinfo["list"])[i]["dt"])
-        hwdes = (historyinfo["list"])[i]["weather"][0]["description"]
+        hwdes = ((historyinfo["list"])[i]["weather"][0]["description"]).lower()
         htemp = uc.temperatureconverter((historyinfo["list"])[i]["main"]["temp"])
         hwspe = int((historyinfo["list"])[i]["wind"]["speed"])
-        hwdir = (historyinfo["list"])[i]["wind"]["deg"]
+        hwdir = uc.winddirection((historyinfo["list"])[i]["wind"]["deg"])
         hrain = "n/a"
 
-        hwdir = uc.winddirection(hwdir)
-
-        histdatetemp.append([htime, hwdes.lower(), htemp, hwspe, hwdir, hrain])
+        histdatetemp.append([htime, hwdes, htemp, hwspe, hwdir, hrain])
 
     return histdatetemp
 
@@ -99,13 +97,11 @@ def extractforecast(forecast_json):
 
     for i in range(ndata):
 
-        forewd = ((forecastinfo["list"])[i]["weather"])[0]["description"]
+        forewd = (((forecastinfo["list"])[i]["weather"])[0]["description"]).lower()
         foretime = uc.datetimeconverter((forecastinfo["list"])[i]["dt"])
         foretemp = uc.temperatureconverter((forecastinfo["list"])[i]["main"]["temp"])
         forewind = int((forecastinfo["list"])[i]["wind"]["speed"])
-        forewdir = (forecastinfo["list"])[i]["wind"]["deg"]
-
-        forewdir = uc.winddirection(forewdir)
+        forewdir = uc.winddirection((forecastinfo["list"])[i]["wind"]["deg"])
 
         try:
             forerain = (forecastinfo["list"])[i]["rain"]
@@ -119,12 +115,12 @@ def extractforecast(forecast_json):
         diffindays = (foretime - firsttime).total_seconds() / secsinday
 
         if diffindays < 1.0:
-            foreinfo.append([foretime, forewd.lower(), foretemp, forewind, forewdir, forerain])
+            foreinfo.append([foretime, forewd, foretemp, forewind, forewdir, forerain])
 
     return foreinfo
 
 
-def drawgraph(hist_list, curr_list, fore_list):
+def visdata(hist_list, curr_list, fore_list):
     """
     Organises data to plot
     :param hist_list: list of history data
@@ -132,11 +128,26 @@ def drawgraph(hist_list, curr_list, fore_list):
     :param fore_list: list of forecast data
     :return:
     """
-
-    output_file("wc.html", title="Weather Comparison")
+    print_c = currdat(curr_list)
     plot_hf = histfore(hist_list, fore_list)
-
+    output_file("wc.html", title="Weather Comparison")
     show(plot_hf)
+    return
+
+
+def currdat(clist):
+
+    print "Date: %s" %clist[0].strftime("%d:%m:%y")
+    print "Time: %s" %clist[0].strftime("%H:%M:%S")
+    print "Description: %s" %clist[1]
+    print "Temperature: %.1f" %clist[2]
+    print "Wind speed: %d m/s" %clist[3]
+    print "Wind direction: %s" %clist[4]
+    print "Sunrise: %s" %clist[5].strftime("%H:%M:%S")
+    print "Sunset: %s" %clist[6].strftime("%H:%M:%S")
+    print "Pressure: %s hPa" %clist[7]
+    print "Humidity: %s%%" %clist[8]
+
     return
 
 
