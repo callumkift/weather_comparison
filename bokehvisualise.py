@@ -65,7 +65,8 @@ def extractcurrent(current_json):
     """
 
     weatherinfo = json.loads(current_json)
-
+    
+    city = weatherinfo["name"] + ", " + weatherinfo["sys"]["country"]
     time = uc.datetimeconverter(weatherinfo["dt"])  # .strftime("%H:%M")
     wd = (weatherinfo["weather"][0])["description"]
     temp = uc.temperatureconverter(weatherinfo["main"]["temp"])  # degrees
@@ -73,10 +74,10 @@ def extractcurrent(current_json):
     humidity = weatherinfo["main"]["humidity"]  # %
     windspeed = int(weatherinfo["wind"]["speed"])  # m / s
     winddir = uc.winddirection(weatherinfo["wind"]["deg"])
-    sunrise = uc.datetimeconverter(weatherinfo["sys"]["sunrise"])  # .strftime("%H:%M")
-    sunset = uc.datetimeconverter(weatherinfo["sys"]["sunset"])  # .strftime("%H:%M")
+    sunrise = uc.datetimeconverter(weatherinfo["sys"]["sunrise"])
+    sunset = uc.datetimeconverter(weatherinfo["sys"]["sunset"])
 
-    return [time, wd, temp, windspeed, winddir, sunrise, sunset, pressure, humidity]
+    return [time, city, wd, temp, windspeed, winddir, sunrise, sunset, pressure, humidity]
 
 
 def extractforecast(forecast_json):
@@ -136,17 +137,23 @@ def visdata(hist_list, curr_list, fore_list):
 
 
 def currdat(clist):
+    """
+    Prints current weather info
+    :param clist: list of weather info
+    :return:
+    """
 
-    print "Date: %s" %clist[0].strftime("%d:%m:%y")
+    print "Date: %s" %clist[0].strftime("%d-%m-%y")
     print "Time: %s" %clist[0].strftime("%H:%M:%S")
-    print "Description: %s" %clist[1]
-    print "Temperature: %.1f" %clist[2]
-    print "Wind speed: %d m/s" %clist[3]
-    print "Wind direction: %s" %clist[4]
-    print "Sunrise: %s" %clist[5].strftime("%H:%M:%S")
-    print "Sunset: %s" %clist[6].strftime("%H:%M:%S")
-    print "Pressure: %s hPa" %clist[7]
-    print "Humidity: %s%%" %clist[8]
+    print "Place: %s" %clist[1]
+    print "Description: %s" %clist[2]
+    print "Temperature: %.1f" %clist[3]
+    print "Wind speed: %d m/s" %clist[4]
+    print "Wind direction: %s" %clist[5]
+    print "Sunrise: %s" %clist[6].strftime("%H:%M:%S")
+    print "Sunset: %s" %clist[7].strftime("%H:%M:%S")
+    print "Pressure: %s hPa" %clist[8]
+    print "Humidity: %s%%" %clist[9]
 
     return
 
