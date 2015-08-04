@@ -41,9 +41,15 @@ def extracthistory(history_json):
     histdatetemp = []
 
     for i in range(ndata):
-        htime = (historyinfo["list"])[i]["dt"]
-        htemp = (historyinfo["list"])[i]["main"]["temp"]
-        histdatetemp.append([uc.datetimeconverter(htime), uc.temperatureconverter(htemp)])
+        # if i == 0:
+        #     print (historyinfo["list"])[i]
+        #     print "\n"
+        htime = uc.datetimeconverter((historyinfo["list"])[i]["dt"])
+        hwdes = (historyinfo["list"])[i]["weather"][0]["description"]
+        htemp = uc.temperatureconverter((historyinfo["list"])[i]["main"]["temp"])
+        hwspe = (historyinfo["list"])[i]["wind"]["speed"]
+        hrain = "n/a"
+        histdatetemp.append([htime, hwdes, htemp, hwspe, hrain])
 
     return histdatetemp
 
@@ -133,17 +139,27 @@ def histfore(histlist, forelist):
     :param forelist: list of forecast data
     :return: plot information
     """
-    htime, htemp = zip(*histlist)
+    htime, hwd, htemp, hwspeed, hrain = zip(*histlist)
     ftime, fwd, ftemp, fwspeed, frain = zip(*forelist)
     htime, ftime = overlaptimes(htime, ftime)
 
+    hsource = ColumnDataSource(
+        data=dict(
+            time=htime,
+            temp=htemp,
+            wdes=hwd,
+            wspe=hwspeed,
+            rain=hrain
+        )
+    )
+
     fsource = ColumnDataSource(
         data=dict(
-            ftime=ftime,
-            ftemp=ftemp,
-            fwdes=fwd,
-            fwspe=fwspeed,
-            frain=frain
+            time=ftime,
+            temp=ftemp,
+            wdes=fwd,
+            wspe=fwspeed,
+            rain=frain
         )
     )
 
@@ -151,13 +167,15 @@ def histfore(histlist, forelist):
     p = figure(title="Weather Comparison", x_axis_label="Time", y_axis_label=r"Temperature", x_axis_type="datetime",
                tools=TOOLS)
 
-    p.line(htime, htemp, legend="Yesterday", color="blue", line_width=1, alpha=0.3)
+    p.line(htime, htemp, source=hsource, legend="Yesterday", color="blue", line_width=1, alpha=0.3)
     p.line(ftime, ftemp, source=fsource, legend="Today", color="red", line_width=1)
     p.circle(ftime, ftemp, source=fsource, legend="Today", color="red")
     p.legend.orientation = "bottom_left"
 
     hover = p.select(dict(type=HoverTool))
-    hover.tooltips = OrderedDict([("Description", "@fwdes"), ("Windspeed", "@fwspe"), ("Rain (mm)", "@frain")])
+    hover.tooltips = OrderedDict(
+        [("Temperature", "@temp"), ("Description", "@wdes"), ("Windspeed (m/s)", "@wspe"),
+         ("Rain (mm)", "@rain")])
 
     return p
 
