@@ -30,24 +30,25 @@ import weathercalls as wc
 import bokehvisualise as bv
 
 if __name__ == '__main__':
-    gl.internet_on()
+    if gl.internet_on():
+        pubip = gl.getip()
+        location_json_str = gl.getaddress(pubip)
+        loc_city, loc_lat, loc_long = gl.getlatlong(location_json_str)
 
-    pubip = gl.getip()
-    location_json_str = gl.getaddress(pubip)
-    loc_city, loc_lat, loc_long = gl.getlatlong(location_json_str)
+        print "Location identified"
 
-    print "Location identified"
+        history_info = wc.getweatherhist(loc_lat, loc_long)
+        current_info = wc.getweathercurrent(loc_lat, loc_long)
+        forecast_info = wc.getweatherforecast(loc_lat, loc_long)
 
-    history_info = wc.getweatherhist(loc_lat, loc_long)
-    current_info = wc.getweathercurrent(loc_lat, loc_long)
-    forecast_info = wc.getweatherforecast(loc_lat, loc_long)
+        print "All weather info retrieved.\n"
 
-    print "All weather info retrieved."
+        # c_info = vw.getcurrentinfo(current_info)
+        # h_info = vw.gethistoryinfo(history_info)
+        # f_info = vw.getforecastinfo(forecast_info)
+        #
+        # vw.plotstatic(h_info, f_info)
 
-    # c_info = vw.getcurrentinfo(current_info)
-    # h_info = vw.gethistoryinfo(history_info)
-    # f_info = vw.getforecastinfo(forecast_info)
-    #
-    # vw.plotstatic(h_info, f_info)
-
-    bv.interactiveplot(history_info, current_info, forecast_info)
+        bv.interactiveplot(history_info, current_info, forecast_info)
+    else:
+        print "\nError: Cannot connect, please check internet connection.\n"

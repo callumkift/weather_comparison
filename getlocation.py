@@ -12,14 +12,14 @@ def internet_on():
     Method to check if connected to internet.
     :return: Boolean
     """
-    while True:
-        try:
-            site_check = "http://google.com/"
-            urllib2.urlopen(site_check, timeout=1)
-            break
-        except urllib2.URLError as e:
-            pass
-    return
+
+    try:
+        site_check = "http://google.com/"
+        urllib2.urlopen(site_check, timeout=1)
+        return True
+    except urllib2.URLError as e:
+        pass
+    return False
 
 
 def getip():
