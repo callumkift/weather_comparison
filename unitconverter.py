@@ -49,5 +49,7 @@ def winddirection(wind_deg):
         wind_dir = "W"
     elif wind_deg > 292.5 and wind_deg < 337.5:
         wind_dir = "NW"
+    else:
+        wind_dir = "n/a"
 
     return wind_dir
