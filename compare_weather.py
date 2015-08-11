@@ -42,10 +42,6 @@ if __name__ == '__main__':
 
         print "All weather info retrieved.\n"
 
-        c_info = vw.getcurrentinfo(current_info)
-        h_info = vw.gethistoryinfo(history_info)
-        f_info = vw.getforecastinfo(forecast_info)
-        
         bv.interactiveplot(history_info, current_info, forecast_info)
     else:
         print "\nError: Cannot connect, please check internet connection.\n"
